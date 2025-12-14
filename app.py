@@ -12,9 +12,9 @@ app.secret_key = 'your_secret_key_here'  # Needed for session management
 
 # MySQL Configuration
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = '12345'
-app.config['MYSQL_DB'] = 'space_users'
+app.config['MYSQL_USER'] = 'Your_db_user_name'
+app.config['MYSQL_PASSWORD'] = 'your_db_password'
+app.config['MYSQL_DB'] = 'your_db_name'
 
 mysql = MySQL(app)
 
