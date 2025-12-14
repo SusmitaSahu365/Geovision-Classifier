@@ -1,0 +1,160 @@
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+body {
+    background-image: url("spaceforsignup.jpg");
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    animation: fadeIn 1s ease-in-out;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding-top: 80px; 
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 2s ease-in-out;
+}
+.btn {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+}
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+#previewImage {
+    max-height: 300px;
+    display: none;
+    border-radius: 10px;
+    width: 100%;
+    object-fit: cover;
+    animation: fadeIn 1s ease-in-out;
+}
+.globe-container {
+    position: absolute;
+    right: 30px;
+    top: 25%;
+    transform: translateY(-50%);
+    width: 250px;
+    height: 250px;
+    animation: float 4s infinite ease-in-out;
+}
+.globe img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.container-fluid {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.loading-spinner {
+    display: none;
+    margin: 10px auto;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* Navbar Style */
+.navbar {
+    background-color: rgba(25, 25, 50, 0.9); /* Dark violet background */
+    color: #ffffff; /* White text color for contrast */
+    padding: 15px 30px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
+    font-size: 18px;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); /* Soft shadow for depth */
+    border-bottom: 2px solid #00ffff; /* Cyan border at the bottom */
+}
+
+.navbar p {
+    margin-left: auto; /* Aligns the username to the right */
+    margin-right: 20px;
+}
+
+.navbar a {
+    color: #ffffff; /* White color for navbar items */
+    text-decoration: none;
+    padding: 12px 20px;
+    font-size: 18px;
+    margin: 0 15px; /* Adds space between items */
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+.navbar a:hover {
+    background-color: rgba(0, 255, 255, 0.2); /* Subtle cyan background on hover */
+    color: #00ffff; /* Change text color to cyan on hover */
+}
+
+/* Submenu for Navbar */
+.navbar .menu {
+    position: relative;
+    display: inline-block;
+}
+
+.navbar .submenu {
+    display: none;
+    position: absolute;
+    background-color: rgba(25, 25, 50, 0.9); /* Dark background for submenu */
+    min-width: 180px;
+    top: 45px;
+    left: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Soft shadow for submenu */
+    z-index: 1000;
+}
+
+.navbar .menu:hover .submenu {
+    display: block;
+}
+
+.navbar .submenu a {
+    padding: 12px 20px;
+    display: block;
+    font-size: 16px;
+    color: #ffffff; /* White color for submenu items */
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle divider between items */
+}
+
+.navbar .submenu a:hover {
+    background-color: rgba(0, 255, 255, 0.3); /* Subtle cyan hover effect */
+    color: #00ffff; /* Change text color to cyan on hover */
+}
+
+.navbar .submenu a:last-child {
+    border-bottom: none; /* Remove bottom border from last item */
+}
+

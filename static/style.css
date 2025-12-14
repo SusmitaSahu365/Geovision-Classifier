@@ -1,0 +1,48 @@
+.space-footer {
+    background: #08011f; /* Dark Violet Background */
+    color: #ffffff;
+    position: relative;
+    padding: 40px 0;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    font-size: 18px;
+    margin-top: 60px; /* Adds margin to avoid overlapping with the main body */
+    border-top: 4px solid #1f076e; /* Slightly lighter violet border on top */
+}
+
+.space-footer p {
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+.space-footer .social-icons a {
+    font-size: 24px;
+    text-decoration: none;
+    color: #00ffff;
+    transition: transform 0.3s ease;
+}
+
+.space-footer .social-icons a:hover {
+    transform: scale(1.2);
+}
+
+.space-footer .text-cyan-300 {
+    font-family: 'Courier New', monospace;
+    font-weight: lighter;
+    letter-spacing: 2px;
+}
+
+.space-footer p {
+    font-size: 20px;
+    animation: glowing-text 1.5s infinite alternate;
+}
+
+/* Glowing effect for text */
+@keyframes glowing-text {
+    0% {
+        text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+    }
+    100% {
+        text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff;
+    }
+}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Geovision Sign In</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-image: url("{{ url_for('static', filename='spaceforsignup.jpg') }}");
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      color: white;
+    }
+
+    .wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .form-container {
+      background: rgba(0, 0, 30, 0.9);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 200, 255, 0.5);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #00bfff;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #f0f8ff;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: 2px solid #00bfff;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #00bfff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #009acd;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <form class="form-container" action="/signin" method="POST">
+      <h2>Sign In</h2>
+
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Log In</button>
+
+      <p style="text-align: center; margin-top: 10px;">
+        Don’t have an account? <a href="{{ url_for('signup') }}" style="color: #00bfff;">Sign Up</a>
+      </p>
+    </form>
+  </div>
+
+  <footer class="space-footer">
+    <p>@2025 Geovision</p>
+  </footer>
+
+  <script>
+    {% if success_message %}
+      alert("{{ success_message }}");
+    {% elif error_message %}
+      alert("{{ error_message }}");
+    {% endif %}
+  </script>
+
+</body>
+</html>
