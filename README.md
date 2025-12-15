@@ -103,6 +103,6 @@ CREATE TABLE predictions (
         ON DELETE CASCADE
 );
 ```
-##License
+## License
 
 This project is developed strictly for academic purposes. Dataset credits belong to the respective authors on Kaggle.
