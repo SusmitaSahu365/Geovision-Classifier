@@ -1,213 +1,63 @@
-from flask import Flask, render_template, request, redirect, url_for, session,jsonify
-from flask_mysqldb import MySQL
-from werkzeug.security import generate_password_hash, check_password_hash
-import MySQLdb.cursors
+from flask import Flask, render_template, request, jsonify
 import os
 import numpy as np
 from keras.preprocessing.image import load_img, img_to_array
-from keras.models import load_model
 from werkzeug.utils import secure_filename
+from model_loader import model  # ✅ already loads the model safely
+
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Needed for session management
+app.secret_key = "deploy_secret_key"  # optional here
 
-# MySQL Configuration
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'Your_db_user_name'
-app.config['MYSQL_PASSWORD'] = 'your_db_password'
-app.config['MYSQL_DB'] = 'your_db_name'
+# Allowed image extensions
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
-mysql = MySQL(app)
-
-# Main page route (renamed from homepage)
-@app.route("/")
-def main():
-    return render_template("main.html")
-
-# Sign Up route
-@app.route("/signup", methods=["GET", "POST"])
-def signup():
-    if request.method == "POST":
-        name = request.form['name']
-        email = request.form['email']
-        username = request.form['username']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
-
-        if password != confirm_password:
-            return render_template("signup.html", error_message="Passwords do not match")
-
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-
-        cursor = mysql.connection.cursor()
-        try:
-            cursor.execute('INSERT INTO users (name, email, username, password) VALUES (%s, %s, %s, %s)',
-                           (name, email, username, hashed_password))
-            mysql.connection.commit()
-            return render_template("main.html", success_message=f"User registered successfully")
-        except Exception as e:
-            return render_template("signup.html", error_message=f"Database Error: {e}")
-        finally:
-            cursor.close()
-
-        
-
-    return render_template("signup.html")
-
-# Sign In route
-@app.route("/signin", methods=["GET", "POST"])
-def signin():
-    if request.method == "POST":
-        username = request.form['username']
-        password = request.form['password']
-
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-        user = cursor.fetchone()
-        cursor.close()
-
-        if user and check_password_hash(user['password'], password):
-            session['username'] = user['username']
-            session['name'] = user['name']
-            session['email'] = user['email']  # Add email to session
-            return redirect(url_for("profile"))
-
-        return render_template("signin.html", error_message="Incorrect username or password")
-
-    return render_template("signin.html")
-
-@app.route("/profile")
-def profile():
-    if 'username' not in session:
-        return redirect(url_for('signin'))  # If the user isn't logged in, redirect to signin page
-
-    username = session['username']
-
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT name, email, username FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
-    cursor.close()
-
-    if user:
-        return render_template("profile.html", name=user[0], email=user[1], username=user[2])
-    else:
-        return "User not found", 404
-
-# Logout route
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for('main'))
-
-# Load the trained model
-model = load_model("Modelmain.h5")
-
-# Define the class names
-class_names = ['Cloudy', 'Desert', 'Green_Area', 'Water']
-
-# Folder to save uploaded images
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
-
-# Function to check allowed file extensions
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Route for the homepage (with sign-in/sign-out)
-@app.route('/')
-def index():
-    return render_template('main.html')
+# Home page — upload form
+@app.route("/")
+def home():
+    return render_template("upload.html")
 
-@app.route('/upload')
-def upload():
-    return render_template('upload.html')
-
-# Route to handle image upload and prediction
-@app.route('/uploads', methods=['POST'])
+# Upload + prediction
+@app.route("/uploads", methods=["POST"])
 def upload_file():
-    if 'image' not in request.files:
-        return jsonify({'success': False, 'error': 'No file part'})
-    
-    file = request.files['image']
-    
-    if file.filename == '':
-        return jsonify({'success': False, 'error': 'No selected file'})
-    
-    if file and allowed_file(file.filename):
-        # Secure the filename and save the file
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename).replace("\\", "/")
-        file.save(file_path)
-        
-        # Load and preprocess the image
-        img = load_img(file_path, target_size=(255, 255))
-        img_array = img_to_array(img) / 255.0
-        img_array = np.reshape(img_array, (1, 255, 255, 3))
+    if "image" not in request.files:
+        return jsonify({"success": False, "error": "No file uploaded"})
 
-        # Get the model predictions
-        predictions = model.predict(img_array)
+    file = request.files["image"]
 
-        # Get the class index with the highest predicted probability
-        class_index = np.argmax(predictions[0])
+    if file.filename == "":
+        return jsonify({"success": False, "error": "No selected file"})
 
-        # Get the predicted class label
-        predicted_label = class_names[class_index]
+    if not allowed_file(file.filename):
+        return jsonify({"success": False, "error": "Invalid file type"})
 
-        # Fetch the user's ID from the 'users' table using a dictionary cursor
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("SELECT id FROM users WHERE username = %s", (session['username'],))
-        user = cursor.fetchone()
+    filename = secure_filename(file.filename)
 
-        if user:
-            user_id = user['id']  # This will now work since 'user' is a dictionary
+    upload_dir = os.path.join("static", "uploads")
+    os.makedirs(upload_dir, exist_ok=True)
 
-            # Insert the prediction into the 'predictions' table
-            cursor.execute('INSERT INTO predictions (user_id, image_path, predicted_class) VALUES (%s, %s, %s)',
-                           (user_id, file_path, predicted_label))
-            mysql.connection.commit()
+    file_path = os.path.join(upload_dir, filename)
+    file.save(file_path)
 
-            # Return the response with prediction data
-            return jsonify({
-                'success': True,
-                'path': file_path,
-                'prediction': predicted_label
-            })
-        else:
-            return jsonify({'success': False, 'error': 'User not found'})
+    # Preprocess image
+    img = load_img(file_path, target_size=(255, 255))
+    img_array = img_to_array(img) / 255.0
+    img_array = np.reshape(img_array, (1, 255, 255, 3))
 
-    else:
-        return jsonify({'success': False, 'error': 'Invalid file format'})
+    # Predict
+    predictions = model.predict(img_array)
+    class_names = ["Cloudy", "Desert", "Green_Area", "Water"]
+    predicted_label = class_names[np.argmax(predictions)]
 
-@app.route("/history")
-def history():
-    if 'username' not in session:
-        return redirect(url_for('signin'))  # If the user isn't logged in, redirect to signin page
-
-    username = session['username']
-
-    # Fetch the user ID using the logged-in user's username
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
-    cursor.close()
-
-    if user:
-        user_id = user['id']  # Get the user ID
-
-        # Fetch predictions for this user
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("SELECT * FROM predictions WHERE user_id = %s", (user_id,))
-        predictions = cursor.fetchall()
-        cursor.close()
-
-        if predictions:
-            return render_template("history.html", predictions=predictions)
-        else:
-            return render_template("history.html", message="No history found.")
-    else:
-        return render_template("history.html", message="User not found.")
-
-
+    return jsonify({
+        "success": True,
+        "prediction": predicted_label,
+        "image_path": file_path
+    })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # For Render, use host 0.0.0.0 and dynamic port
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
