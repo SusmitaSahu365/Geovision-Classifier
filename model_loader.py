@@ -13,24 +13,29 @@ def download_model():
     if os.path.exists(MODEL_PATH):
         os.remove(MODEL_PATH)
 
+    print("📥 Downloading model from Google Drive...")
     cmd = [
         "python", "-m", "gdown",
         "--id", FILE_ID,
         "--fuzzy",
         "-O", MODEL_PATH
     ]
-
-    subprocess.run(cmd, check=True)
+    try:
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as e:
+        print("❌ Model download failed:", e)
+        raise e
 
     size = os.path.getsize(MODEL_PATH)
     print(f"⬇️ Downloaded model size: {size / (1024*1024):.2f} MB")
 
 def get_model():
+    # Download only if missing
     if not os.path.exists(MODEL_PATH):
-        print("📥 Downloading model from Google Drive...")
         download_model()
 
     print("✅ Loading model...")
     return load_model(MODEL_PATH)
 
+# Load once at import
 model = get_model()
