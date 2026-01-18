@@ -9,9 +9,10 @@ FILE_ID = "1fBQdulES8JMWcm-SDbCxvkHZ58pLGqU_"
 def download_model():
     os.makedirs(MODEL_DIR, exist_ok=True)
 
-    # Remove corrupted file if exists
-    if os.path.exists(MODEL_PATH):
-        os.remove(MODEL_PATH)
+    # Skip download if file already exists
+    if os.path.exists(MODEL_PATH) and os.path.getsize(MODEL_PATH) > 0:
+        print("✅ Model already exists, skipping download")
+        return
 
     print("📥 Downloading model from Google Drive...")
     cmd = [
@@ -29,13 +30,16 @@ def download_model():
     size = os.path.getsize(MODEL_PATH)
     print(f"⬇️ Downloaded model size: {size / (1024*1024):.2f} MB")
 
+# Load the model **once** at import
+_model_instance = None
+
 def get_model():
-    # Download only if missing
-    if not os.path.exists(MODEL_PATH):
+    global _model_instance
+    if _model_instance is None:
         download_model()
+        print("✅ Loading model into memory...")
+        _model_instance = load_model(MODEL_PATH)
+    return _model_instance
 
-    print("✅ Loading model...")
-    return load_model(MODEL_PATH)
-
-# Load once at import
+# Load immediately on import
 model = get_model()
