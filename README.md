@@ -94,24 +94,33 @@ Homepage
 
 <img width="1363" height="600" alt="image" src="https://github.com/user-attachments/assets/38231a46-0981-43df-884f-da33b47dcebd" />
 
+
+
 User Authentication (Login / Registration)
 
 <img width="1365" height="599" alt="image" src="https://github.com/user-attachments/assets/8e5a97ba-8873-4478-ae91-6b2ab381e150" />
 
 <img width="1355" height="599" alt="image" src="https://github.com/user-attachments/assets/368f6dcb-bb71-48ee-8ba3-c013d4453068" />
 
+
+
 User Dashboard
 
 <img width="1356" height="609" alt="image" src="https://github.com/user-attachments/assets/6de75ae1-9f02-4c6e-a627-157093cc9ec1" />
+
 
 
 Image Upload & Classification
 
 <img width="1350" height="594" alt="image" src="https://github.com/user-attachments/assets/2675d52e-0cee-4e79-8fac-07f655315543" />
 
+
+
 Profile
 
 <img width="1343" height="586" alt="image" src="https://github.com/user-attachments/assets/79128456-0b95-4284-964a-bbcb22f6e1ef" />
+
+
 
 Prediction History
 
